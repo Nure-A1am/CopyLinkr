@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>CopyLinkr — Click. Copied.</title>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #f7f7f8;
+  --surface:   #ffffff;
+  --surface2:  #f0f0f0;
+  --border:    #e5e5e5;
+  --border2:   #d0d0d0;
+  --text:      #111111;
+  --text2:     #666666;
+  --text3:     #aaaaaa;
+  --accent:    #111111;
+  --accent-fg: #ffffff;
+  --green:     #16a34a;
+  --green-bg:  #f0fdf4;
+  --green-bar: #16a34a;
+  --blue:      #2563eb;
+  --amber:     #d97706;
+  --amber-bg:  #fef9ec;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+i[data-lucide] { display: inline-flex; }
+
+/* ========== SUCCESS SCREEN ========== */
+#copyScreen {
+  display: none; position: fixed; inset: 0;
+  background: var(--surface);
+  flex-direction: column; align-items: center;
+  justify-content: center; text-align: center; padding: 40px 28px;
+}
+#copyScreen.show { display: flex; }
+
+.success-icon {
+  width: 96px; height: 96px; border-radius: 50%;
+  background: var(--green-bg);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 24px; opacity: 0; transform: scale(0.5);
+  transition: opacity 0.35s cubic-bezier(.34,1.56,.64,1), transform 0.35s cubic-bezier(.34,1.56,.64,1);
+}
+.success-icon.pop { opacity: 1; transform: scale(1); }
+.success-icon svg {
+  width: 46px; height: 46px; stroke: var(--green);
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none;
+}
+.success-icon svg polyline, .success-icon svg path {
+  stroke-dasharray: 100; stroke-dashoffset: 100;
+  transition: stroke-dashoffset 0.45s 0.22s ease;
+}
+.success-icon.pop svg polyline,
+.success-icon.pop svg path { stroke-dashoffset: 0; }
+
+.copied-title {
+  font-size: 26px; font-weight: 800; color: var(--text);
+  letter-spacing: -0.4px; margin-bottom: 8px;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 0.3s 0.18s ease, transform 0.3s 0.18s ease;
+}
+.copied-title.show { opacity: 1; transform: translateY(0); }
+
+.copied-sub {
+  font-size: 15px; color: var(--text2); line-height: 1.55; margin-bottom: 40px;
+  opacity: 0; transition: opacity 0.3s 0.28s ease;
+}
+.copied-sub.show { opacity: 1; }
+
+.progress-track {
+  width: 180px; height: 3px; background: var(--border);
+  border-radius: 99px; overflow: hidden;
+  opacity: 0; transition: opacity 0.2s 0.35s ease;
+}
+.progress-track.show { opacity: 1; }
+.progress-fill {
+  height: 100%; background: var(--green-bar);
+  border-radius: 99px; transform-origin: left;
+}
+.progress-fill.run { animation: drain 1.9s linear forwards; }
+@keyframes drain { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
+/* ========== ERROR SCREEN ========== */
+#errorScreen {
+  display: none; position: fixed; inset: 0; background: var(--surface);
+  flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 40px 28px; gap: 14px;
+}
+#errorScreen.show { display: flex; }
+.err-icon-wrap {
+  width: 80px; height: 80px; border-radius: 50%; background: var(--amber-bg);
+  display: flex; align-items: center; justify-content: center; margin-bottom: 4px;
+}
+.err-icon-wrap svg { stroke: var(--amber); width: 36px; height: 36px; }
+.err-title { font-size: 22px; font-weight: 700; color: var(--text); }
+.err-sub { font-size: 14px; color: var(--text2); line-height: 1.55; max-width: 280px; }
+.manual-btn {
+  padding: 15px 0; width: 100%; max-width: 280px;
+  background: var(--accent); color: var(--accent-fg);
+  border: none; border-radius: 14px;
+  font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer;
+  margin-top: 6px; transition: transform 0.15s, opacity 0.15s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.manual-btn svg { stroke: var(--accent-fg); width: 18px; height: 18px; }
+.manual-btn:active { transform: scale(0.97); }
+.manual-btn.done { background: var(--green); }
+
+/* ========== BUILDER ========== */
+.page { width: 100%; max-width: 500px; }
+
+.hero { text-align: center; margin-bottom: 24px; }
+.brand { display: inline-flex; align-items: center; gap: 9px; margin-bottom: 14px; }
+.brand-icon {
+  width: 40px; height: 40px; background: var(--accent); border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+}
+.brand-icon svg { stroke: var(--accent-fg); width: 20px; height: 20px; }
+.brand-name { font-size: 20px; font-weight: 800; color: var(--text); letter-spacing: -0.4px; }
+.hero-tagline { font-size: 14px; color: var(--text2); }
+
+.chips {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  justify-content: center; margin-top: 14px;
+}
+.chip {
+  font-size: 12px; padding: 5px 12px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 99px; color: var(--text2); font-weight: 500;
+  cursor: pointer; transition: border-color 0.15s, color 0.15s;
+  white-space: nowrap; display: inline-flex; align-items: center; gap: 5px;
+}
+.chip svg { width: 13px; height: 13px; stroke: currentColor; flex-shrink: 0; }
+.chip:hover { border-color: var(--text); color: var(--text); }
+.chip:active { background: var(--surface2); }
+
+.card {
+  background: var(--surface); border-radius: 20px; padding: 24px 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05);
+}
+
+.tabs {
+  display: flex; background: var(--surface2);
+  border-radius: 10px; padding: 3px; margin-bottom: 22px;
+}
+.tab-btn {
+  flex: 1; padding: 8px 10px; border: none; background: transparent;
+  border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 500;
+  color: var(--text2); cursor: pointer; transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.tab-btn svg { width: 14px; height: 14px; stroke: currentColor; }
+.tab-btn.active {
+  background: var(--surface); color: var(--text);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+label.field-label {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600; color: var(--text2);
+  margin-bottom: 7px; margin-top: 18px;
+}
+label.field-label svg { width: 13px; height: 13px; stroke: var(--text3); }
+label.field-label:first-child { margin-top: 0; }
+
+textarea, input[type=text] {
+  width: 100%; background: #fafafa; border: 1.5px solid var(--border);
+  border-radius: 11px; padding: 12px 13px; font-family: inherit;
+  font-size: 14px; color: var(--text); outline: none;
+  transition: border-color 0.15s; resize: vertical;
+}
+textarea:focus, input[type=text]:focus { border-color: var(--text); background: var(--surface); }
+textarea { min-height: 110px; }
+
+.char-hint { font-size: 11px; color: var(--text3); margin-top: 5px; text-align: right; }
+
+.gen-btn {
+  width: 100%; margin-top: 18px; padding: 14px;
+  background: var(--accent); color: var(--accent-fg);
+  border: none; border-radius: 13px;
+  font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.gen-btn svg { stroke: var(--accent-fg); width: 18px; height: 18px; }
+.gen-btn:hover { opacity: 0.85; }
+.gen-btn:active { transform: scale(0.98); }
+
+.result-box {
+  display: none; margin-top: 16px; background: #f9fafb;
+  border: 1.5px solid var(--border); border-radius: 13px; padding: 14px;
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.result-box.show { display: block; }
+
+.result-label {
+  font-size: 11px; font-weight: 600; color: var(--text3);
+  text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 9px;
+  display: flex; align-items: center; gap: 5px;
+}
+.result-label svg { width: 12px; height: 12px; stroke: var(--text3); }
+.result-url-text {
+  font-size: 12px; color: var(--blue); word-break: break-all; line-height: 1.65;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px 12px; cursor: text; user-select: all;
+}
+.copy-link-btn {
+  margin-top: 10px; width: 100%; padding: 11px;
+  background: var(--surface); border: 1.5px solid var(--border2); border-radius: 10px;
+  font-family: inherit; font-size: 13px; font-weight: 600; color: var(--text);
+  cursor: pointer; transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+}
+.copy-link-btn svg { width: 15px; height: 15px; stroke: currentColor; }
+.copy-link-btn:hover { border-color: var(--text); }
+.copy-link-btn.done { border-color: var(--green); color: var(--green); background: var(--green-bg); }
+
+.how-list { display: flex; flex-direction: column; }
+.how-step {
+  display: flex; gap: 13px; align-items: flex-start;
+  padding: 12px 0; border-bottom: 1px solid var(--border);
+}
+.how-step:last-child { border-bottom: none; }
+.step-num {
+  width: 26px; height: 26px; background: var(--text); color: var(--surface);
+  border-radius: 50%; font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.step-body { font-size: 13.5px; color: var(--text2); line-height: 1.55; }
+.step-body strong { color: var(--text); font-weight: 600; }
+.step-body small { display: block; font-size: 12px; color: var(--text3); margin-top: 2px; }
+
+.use-cases-section {
+  margin-top: 20px; background: #f9fafb; border-radius: 12px; padding: 16px;
+}
+.uc-title {
+  font-size: 11px; font-weight: 700; color: var(--text3);
+  text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px;
+}
+.uc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.uc-item {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  padding: 10px 12px; font-size: 12.5px; color: var(--text2); line-height: 1.4;
+  display: flex; align-items: center; gap: 8px;
+}
+.uc-item svg { width: 15px; height: 15px; stroke: var(--text3); flex-shrink: 0; }
+
+.hosting-note {
+  margin-top: 16px; padding: 13px 14px;
+  background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px;
+  font-size: 12.5px; color: var(--text2); line-height: 1.8;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.hosting-note svg { width: 16px; height: 16px; stroke: var(--text3); flex-shrink: 0; margin-top: 2px; }
+.hosting-note strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<!-- SUCCESS -->
+<div id="copyScreen">
+  <div class="success-icon" id="successIcon"><i data-lucide="check"></i></div>
+  <div class="copied-title" id="copiedTitle">Copied!</div>
+  <div class="copied-sub" id="copiedSub">Ready to paste anywhere you need.</div>
+  <div class="progress-track" id="progressTrack">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+</div>
+
+<!-- MANUAL FALLBACK -->
+<div id="errorScreen">
+  <div class="err-icon-wrap"><i data-lucide="clipboard-x"></i></div>
+  <div class="err-title">Tap to copy</div>
+  <div class="err-sub">Your browser needs a tap to allow copying.</div>
+  <button class="manual-btn" id="manualBtn">
+    <i data-lucide="clipboard-copy"></i> Copy to Clipboard
+  </button>
+</div>
+
+<!-- BUILDER -->
+<div class="page" id="builderUI" style="display:none">
+  <div class="hero">
+    <div class="brand">
+      <div class="brand-icon"><i data-lucide="zap"></i></div>
+      <span class="brand-name">CopyLinkr</span>
+    </div>
+    <p class="hero-tagline">Turn any text into a one-click copy link — share it anywhere.</p>
+    <div class="chips">
+      <span class="chip" onclick="fillExample('email')"><i data-lucide="mail"></i> Email</span>
+      <span class="chip" onclick="fillExample('phone')"><i data-lucide="phone"></i> Phone</span>
+      <span class="chip" onclick="fillExample('address')"><i data-lucide="map-pin"></i> Address</span>
+      <span class="chip" onclick="fillExample('wifi')"><i data-lucide="wifi"></i> Wi-Fi</span>
+      <span class="chip" onclick="fillExample('code')"><i data-lucide="tag"></i> Promo code</span>
+      <span class="chip" onclick="fillExample('bank')"><i data-lucide="landmark"></i> Bank details</span>
+      <span class="chip" onclick="fillExample('social')"><i data-lucide="at-sign"></i> Social handle</span>
+      <span class="chip" onclick="fillExample('note')"><i data-lucide="file-text"></i> Any text</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="setTab(0)">
+        <i data-lucide="link"></i> Create Link
+      </button>
+      <button class="tab-btn" onclick="setTab(1)">
+        <i data-lucide="info"></i> How It Works
+      </button>
+    </div>
+
+    <div id="tab0">
+      <label class="field-label"><i data-lucide="type"></i> Text to copy</label>
+      <textarea id="textInput" placeholder="Paste or type anything here — email, phone, address, code, notes…"></textarea>
+      <div class="char-hint" id="charHint">0 characters</div>
+
+      <label class="field-label"><i data-lucide="globe"></i> Your CopyLinkr page URL</label>
+      <input type="text" id="baseUrl" placeholder="https://your-copylinkr.netlify.app">
+
+      <button class="gen-btn" onclick="generateLink()">
+        <i data-lucide="zap"></i> Generate Copy Link
+      </button>
+
+      <div class="result-box" id="resultBox">
+        <div class="result-label"><i data-lucide="link-2"></i> Your CopyLinkr link</div>
+        <div class="result-url-text" id="resultUrl"></div>
+        <button class="copy-link-btn" id="copyUrlBtn" onclick="copyResultUrl()">
+          <i data-lucide="copy"></i> Copy this link
+        </button>
+      </div>
+    </div>
+
+    <div id="tab1" style="display:none">
+      <div class="how-list">
+        <div class="how-step">
+          <div class="step-num">1</div>
+          <div class="step-body"><strong>Host this HTML file for free</strong><small>Netlify Drop, GitHub Pages, or Vercel — takes 2 minutes</small></div>
+        </div>
+        <div class="how-step">
+          <div class="step-num">2</div>
+          <div class="step-body"><strong>Type your text & generate a link</strong><small>Any text works — emails, codes, addresses, passwords, notes</small></div>
+        </div>
+        <div class="how-step">
+          <div class="step-num">3</div>
+          <div class="step-body"><strong>Share or embed the link anywhere</strong><small>CV, bio, QR code, email signature, chat message, website…</small></div>
+        </div>
+        <div class="how-step">
+          <div class="step-num">4</div>
+          <div class="step-body"><strong>One click → instantly copied</strong><small>The page shows "Copied!" and goes back automatically</small></div>
+        </div>
+      </div>
+      <div class="use-cases-section">
+        <div class="uc-title">Where people use it</div>
+        <div class="uc-grid">
+          <div class="uc-item"><i data-lucide="file-text"></i> CV / Resume links</div>
+          <div class="uc-item"><i data-lucide="tag"></i> Promo & discount codes</div>
+          <div class="uc-item"><i data-lucide="wifi"></i> Guest Wi-Fi passwords</div>
+          <div class="uc-item"><i data-lucide="landmark"></i> Payment & bank info</div>
+          <div class="uc-item"><i data-lucide="contact"></i> Business card details</div>
+          <div class="uc-item"><i data-lucide="at-sign"></i> Social media handles</div>
+          <div class="uc-item"><i data-lucide="map-pin"></i> Delivery addresses</div>
+          <div class="uc-item"><i data-lucide="clipboard"></i> Boilerplate text</div>
+        </div>
+      </div>
+      <div class="hosting-note">
+        <i data-lucide="rocket"></i>
+        <span><strong>Fastest way to go live:</strong> Go to <strong>netlify.com/drop</strong>, drag this HTML file in — live URL in under 60 seconds, completely free.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+lucide.createIcons();
+
+const params = new URLSearchParams(window.location.search);
+const textParam = params.get('text');
+
+const EXAMPLES = {
+  email:   'hello@yourname.com',
+  phone:   '+1 (555) 000-1234',
+  address: '42 Example Street, Apt 3B\nNew York, NY 10001\nUSA',
+  wifi:    'Network: MyHomeWifi\nPassword: supersecret123',
+  code:    'SAVE20OFF',
+  bank:    'Bank: First National\nAccount: 1234567890\nRouting: 021000021',
+  social:  '@yourhandle',
+  note:    'Feel free to type anything here.\nNewlines and spaces are preserved exactly.'
+};
+
+if (textParam) {
+  const text = textParam;
+
+  function showSuccess() {
+    document.getElementById('copyScreen').classList.add('show');
+    requestAnimationFrame(() => setTimeout(() => {
+      document.getElementById('successIcon').classList.add('pop');
+      document.getElementById('copiedTitle').classList.add('show');
+      document.getElementById('copiedSub').classList.add('show');
+      document.getElementById('progressTrack').classList.add('show');
+      setTimeout(() => document.getElementById('progressFill').classList.add('run'), 120);
+      setTimeout(() => { if (history.length > 1) history.back(); else window.close(); }, 2200);
+    }, 60));
+  }
+
+  function showError() {
+    document.getElementById('errorScreen').classList.add('show');
+    const btn = document.getElementById('manualBtn');
+    btn.onclick = () => {
+      doFallback(text);
+      btn.innerHTML = '<i data-lucide="check"></i> Copied!';
+      lucide.createIcons();
+      btn.classList.add('done'); btn.disabled = true;
+      setTimeout(() => { if (history.length > 1) history.back(); else window.close(); }, 900);
+    };
+  }
+
+  function doFallback(t) {
+    const ta = document.createElement('textarea');
+    ta.value = t;
+    ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(ta);
+    return ok;
+  }
+
+  async function autoCopy() {
+    try { await navigator.clipboard.writeText(text); showSuccess(); }
+    catch { if (doFallback(text)) showSuccess(); else showError(); }
+  }
+
+  autoCopy();
+
+} else {
+  document.getElementById('builderUI').style.display = 'block';
+  document.getElementById('baseUrl').value = window.location.href.split('?')[0];
+  const ta = document.getElementById('textInput');
+  ta.addEventListener('input', () => {
+    document.getElementById('charHint').textContent =
+      ta.value.length + ' character' + (ta.value.length !== 1 ? 's' : '');
+  });
+}
+
+window.fillExample = k => {
+  const ta = document.getElementById('textInput');
+  ta.value = EXAMPLES[k] || '';
+  ta.dispatchEvent(new Event('input'));
+  ta.focus();
+};
+
+window.setTab = n => {
+  document.querySelectorAll('.tab-btn').forEach((t,i) => t.classList.toggle('active', i===n));
+  document.getElementById('tab0').style.display = n===0 ? 'block' : 'none';
+  document.getElementById('tab1').style.display = n===1 ? 'block' : 'none';
+};
+
+window.generateLink = () => {
+  const text = document.getElementById('textInput').value;
+  if (!text.trim()) { alert('Please enter some text first.'); return; }
+  const base = document.getElementById('baseUrl').value.trim() || window.location.href.split('?')[0];
+  document.getElementById('resultUrl').textContent = base + '?text=' + encodeURIComponent(text);
+  document.getElementById('resultBox').classList.add('show');
+  const btn = document.getElementById('copyUrlBtn');
+  btn.innerHTML = '<i data-lucide="copy"></i> Copy this link';
+  btn.classList.remove('done');
+  lucide.createIcons();
+};
+
+window.copyResultUrl = () => {
+  const url = document.getElementById('resultUrl').textContent;
+  navigator.clipboard.writeText(url).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = url; ta.style.cssText = 'position:fixed;top:-9999px';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+  });
+  const btn = document.getElementById('copyUrlBtn');
+  btn.innerHTML = '<i data-lucide="check"></i> Copied!';
+  btn.classList.add('done'); lucide.createIcons();
+  setTimeout(() => {
+    btn.innerHTML = '<i data-lucide="copy"></i> Copy this link';
+    btn.classList.remove('done'); lucide.createIcons();
+  }, 2000);
+};
+</script>
+</body>
+</html>
