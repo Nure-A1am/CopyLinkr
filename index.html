@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>CopyLinkr — Click. Copied.</title>
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
@@ -44,12 +43,16 @@ i[data-lucide] { display: inline-flex; }
 
 /* ========== SUCCESS SCREEN ========== */
 #copyScreen {
-  display: none; position: fixed; inset: 0;
+  display: flex;
+  position: fixed; inset: 0;
   background: var(--surface);
   flex-direction: column; align-items: center;
   justify-content: center; text-align: center; padding: 40px 28px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
 }
-#copyScreen.show { display: flex; }
+#copyScreen.show { opacity: 1; pointer-events: auto; }
 
 .success-icon {
   width: 96px; height: 96px; border-radius: 50%;
@@ -99,11 +102,15 @@ i[data-lucide] { display: inline-flex; }
 
 /* ========== ERROR SCREEN ========== */
 #errorScreen {
-  display: none; position: fixed; inset: 0; background: var(--surface);
+  display: flex;
+  position: fixed; inset: 0; background: var(--surface);
   flex-direction: column; align-items: center; justify-content: center;
   text-align: center; padding: 40px 28px; gap: 14px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
 }
-#errorScreen.show { display: flex; }
+#errorScreen.show { opacity: 1; pointer-events: auto; }
 .err-icon-wrap {
   width: 80px; height: 80px; border-radius: 50%; background: var(--amber-bg);
   display: flex; align-items: center; justify-content: center; margin-bottom: 4px;
@@ -387,6 +394,8 @@ textarea { min-height: 110px; }
   </div>
 </div>
 
+<!-- lucide LAST — after all HTML, before app script -->
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script>
 lucide.createIcons();
 
@@ -408,14 +417,15 @@ if (textParam) {
   const text = textParam;
 
   function showSuccess() {
-    document.getElementById('copyScreen').classList.add('show');
+    const screen = document.getElementById('copyScreen');
+    screen.classList.add('show');
     requestAnimationFrame(() => setTimeout(() => {
       document.getElementById('successIcon').classList.add('pop');
       document.getElementById('copiedTitle').classList.add('show');
       document.getElementById('copiedSub').classList.add('show');
       document.getElementById('progressTrack').classList.add('show');
       setTimeout(() => document.getElementById('progressFill').classList.add('run'), 120);
-      setTimeout(() => { if (history.length > 1) history.back(); else window.close(); }, 2200);
+      setTimeout(() => { if (history.length > 1) history.back(); else window.close(); }, 2500);
     }, 60));
   }
 
@@ -444,8 +454,14 @@ if (textParam) {
   }
 
   async function autoCopy() {
-    try { await navigator.clipboard.writeText(text); showSuccess(); }
-    catch { if (doFallback(text)) showSuccess(); else showError(); }
+    // HTTPS secure context: try clipboard API
+    if (window.isSecureContext && navigator.clipboard) {
+      try { await navigator.clipboard.writeText(text); showSuccess(); return; }
+      catch(e) {}
+    }
+    // HTTP / insecure: execCommand only works on user gesture
+    // show tap-to-copy screen, copy happens on button tap
+    showError();
   }
 
   autoCopy();
@@ -487,19 +503,32 @@ window.generateLink = () => {
 
 window.copyResultUrl = () => {
   const url = document.getElementById('resultUrl').textContent;
-  navigator.clipboard.writeText(url).catch(() => {
-    const ta = document.createElement('textarea');
-    ta.value = url; ta.style.cssText = 'position:fixed;top:-9999px';
-    document.body.appendChild(ta); ta.select();
-    document.execCommand('copy'); document.body.removeChild(ta);
-  });
   const btn = document.getElementById('copyUrlBtn');
-  btn.innerHTML = '<i data-lucide="check"></i> Copied!';
-  btn.classList.add('done'); lucide.createIcons();
-  setTimeout(() => {
-    btn.innerHTML = '<i data-lucide="copy"></i> Copy this link';
-    btn.classList.remove('done'); lucide.createIcons();
-  }, 2000);
+
+  function markDone() {
+    btn.innerHTML = '<i data-lucide="check"></i> Copied!';
+    btn.classList.add('done'); lucide.createIcons();
+    setTimeout(() => {
+      btn.innerHTML = '<i data-lucide="copy"></i> Copy this link';
+      btn.classList.remove('done'); lucide.createIcons();
+    }, 2000);
+  }
+
+  function fallbackCopy() {
+    const ta = document.createElement('textarea');
+    ta.value = url;
+    ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;width:1px;height:1px';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
+    try { document.execCommand('copy'); markDone(); } catch(e) { alert('Copy failed. Please copy manually:\n' + url); }
+    document.body.removeChild(ta);
+  }
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(url).then(markDone).catch(fallbackCopy);
+  } else {
+    fallbackCopy();
+  }
 };
 </script>
 </body>
