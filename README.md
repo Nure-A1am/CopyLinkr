@@ -2,14 +2,16 @@
 
 <br/>
 
-# ⚡ CopyLinkr
+<img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/clipboard-check.svg" width="48" height="48">
+
+# CopyLinkr
 
 ### Turn any text into a one-click copy link — share it anywhere.
 
 <br/>
 
-<a href="https://nure-a1am.github.io/CopyLinkr/index.html">
-  <img src="https://img.shields.io/badge/Live%20Demo-Visit%20Now-%23000000?style=for-the-badge&logo=googlechrome&logoColor=white" />
+<a href="https://copylinkr.web.app">
+  <img src="https://img.shields.io/badge/Live%20Demo-copylinkr.web.app-%23000000?style=for-the-badge&logo=googlechrome&logoColor=white" />
 </a>
 &nbsp;
 <a href="LICENSE">
@@ -34,7 +36,7 @@
 
 </div>
 
-## 📌 What is CopyLinkr?
+## <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/info.svg" height="20"> What is CopyLinkr?
 
 **CopyLinkr** is a lightweight, serverless tool that converts any piece of text into a shareable link. When someone visits the link, the text is **automatically copied to their clipboard** — no buttons, no friction, no app required.
 
@@ -44,34 +46,38 @@
 
 ---
 
-## ✨ Features
+## <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/list-checks.svg" height="20"> Features
 
 | | Feature | Description |
 |---|---|---|
-| ⚡ | **Auto Copy** | Text copies instantly on page load |
-| 🔗 | **Link Generator** | Built-in UI to generate copy links |
-| 📱 | **Mobile Friendly** | Fully responsive on all screen sizes |
-| 🎨 | **Clean UI** | Light theme with Lucide icon library |
-| 🚫 | **No Backend** | Pure HTML/CSS/JS — zero server needed |
-| ♾️ | **Unlimited Links** | Generate as many links as you want |
-| 🔄 | **Auto Close** | Page goes back automatically after copy |
-| 🛡️ | **Fallback Support** | Manual copy button if browser blocks auto-copy |
+| <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/zap.svg" height="16"> | **Auto Copy** | Text copies instantly on page load |
+| <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/link.svg" height="16"> | **Link Generator** | Built-in UI to generate copy links |
+| <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/smartphone.svg" height="16"> | **Mobile Friendly** | Fully responsive on all screen sizes |
+| <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/palette.svg" height="16"> | **Clean UI** | Light theme with Lucide icon library |
+| <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/server-off.svg" height="16"> | **No Backend** | Pure HTML/CSS/JS — zero server needed |
+| <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/infinity.svg" height="16"> | **Unlimited Links** | Generate as many links as you want |
+| <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/refresh-cw.svg" height="16"> | **Auto Close** | Page goes back automatically after copy |
+| <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/shield.svg" height="16"> | **Fallback Support** | Manual copy button if browser blocks auto-copy |
 
 <br/>
 
 ---
 
-## 🚀 Use Cases
+## <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/briefcase.svg" height="20"> Use Cases
 
 <div align="center">
 
-| 📄 CV / Resume | 🛍️ Promo Codes | 📶 Wi-Fi Passwords | 🏦 Bank Details |
+| <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/file-text.svg" height="16"> CV / Resume | <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/tag.svg" height="16"> Promo Codes | <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/wifi.svg" height="16"> Wi-Fi Passwords | <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/landmark.svg" height="16"> Bank Details |
 |:---:|:---:|:---:|:---:|
 | One-click copy for email, phone & address | Share discount codes that copy instantly | No more typing long passwords for guests | Share account details safely via link |
 
-| 📇 Business Cards | 🔗 Social Handles | 📍 Delivery Address | ✍️ Boilerplate Text |
+| <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/contact.svg" height="16"> Business Cards | <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/at-sign.svg" height="16"> Social Handles | <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/map-pin.svg" height="16"> Delivery Address | <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/clipboard.svg" height="16"> Boilerplate Text |
 |:---:|:---:|:---:|:---:|
 | Digital card details in one tap | Copy your username with a single click | Send addresses that copy on tap | Reusable text snippets via shareable link |
+
+| <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/lock.svg" height="16"> OTP / Verification Codes |
+|:---:|
+| Email clients don't support copy buttons — embed a CopyLinkr link so recipients click once to copy the OTP instantly |
 
 </div>
 
@@ -79,7 +85,7 @@
 
 ---
 
-## 🔒 Privacy & Security
+## <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/shield-check.svg" height="20"> Privacy & Security
 
 > **CopyLinkr stores absolutely nothing.**
 
@@ -87,11 +93,11 @@ All text is embedded directly into the URL as a query parameter — no server, n
 
 | | What happens | Detail |
 |---|---|---|
-| ✅ | Text lives in the URL | `?text=your+text` — visible, open, no hidden storage |
-| ✅ | No server requests | The page is fully static — nothing is sent anywhere |
-| ✅ | No cookies or tracking | Zero analytics, zero fingerprinting |
-| ✅ | No account needed | No sign-up, no login, no personal data collected |
-| ✅ | Open source | Anyone can inspect the full source code |
+| <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/check.svg" height="16"> | Text lives in the URL | `?text=your+text` — visible, open, no hidden storage |
+| <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/check.svg" height="16"> | No server requests | The page is fully static — nothing is sent anywhere |
+| <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/check.svg" height="16"> | No cookies or tracking | Zero analytics, zero fingerprinting |
+| <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/check.svg" height="16"> | No account needed | No sign-up, no login, no personal data collected |
+| <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/check.svg" height="16"> | Open source | Anyone can inspect the full source code |
 
 > Simply put — if you delete the link, the data is gone forever. Nobody has it.
 
@@ -99,7 +105,7 @@ All text is embedded directly into the URL as a query parameter — no server, n
 
 ---
 
-## 🛠️ Tech Stack
+## <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/code-2.svg" height="20"> Tech Stack
 
 | Technology | Role |
 |---|---|
@@ -108,13 +114,12 @@ All text is embedded directly into the URL as a query parameter — no server, n
 | <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black" /> | Clipboard API, URL parsing & logic |
 | <img src="https://img.shields.io/badge/Google%20Fonts%20(Inter)-4285F4?style=flat-square&logo=google&logoColor=white" /> | Clean, modern typeface |
 | <img src="https://img.shields.io/badge/Lucide%20Icons-f97316?style=flat-square" /> | Consistent & lightweight icon library |
-| <img src="https://img.shields.io/badge/GitHub%20Pages-181717?style=flat-square&logo=github&logoColor=white" /> | Free static hosting |
 
 <br/>
 
 ---
 
-## 📖 How It Works
+## <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/book-open.svg" height="20"> How It Works
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -134,14 +139,14 @@ All text is embedded directly into the URL as a query parameter — no server, n
 
 **Generated link format:**
 ```
-https://nure-a1am.github.io/CopyLinkr/index.html?text=your+text+here
+https://copylinkr.web.app?text=your+text+here
 ```
 
 <br/>
 
 ---
 
-## 📁 Project Structure
+## <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/folder.svg" height="20"> Project Structure
 
 ```
 CopyLinkr/
@@ -153,7 +158,7 @@ CopyLinkr/
 
 ---
 
-## 📜 License
+## <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/scroll.svg" height="20"> License
 
 ```
 MIT License © 2026 CopyLinkr
@@ -169,16 +174,16 @@ distribute it freely, subject to the above copyright notice.
 
 <div align="center">
 
-<a href="https://nure-a1am.github.io/CopyLinkr/index.html">
-  <img src="https://img.shields.io/badge/Visit%20CopyLinkr-nure--a1am.github.io%2FCopyLinkr-000000?style=for-the-badge&logo=googlechrome&logoColor=white" />
+<a href="https://copylinkr.web.app">
+  <img src="https://img.shields.io/badge/Visit%20CopyLinkr-copylinkr.web.app-000000?style=for-the-badge&logo=googlechrome&logoColor=white" />
 </a>
 
 <br/><br/>
 
 Made with ♥ &nbsp;·&nbsp;
-<a href="https://github.com/nure-a1am/CopyLinkr/issues">🐛 Report Issue</a>
+<a href="https://github.com/nure-a1am/CopyLinkr/issues"><img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/bug.svg" height="14"> Report Issue</a>
 &nbsp;·&nbsp;
-<a href="https://github.com/nure-a1am/CopyLinkr">⭐ Star this repo</a>
+<a href="https://github.com/nure-a1am/CopyLinkr"><img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/star.svg" height="14"> Star this repo</a>
 
 <br/>
 
